@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse
 import httpx
 from dotenv import load_dotenv
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
@@ -16,6 +17,9 @@ NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET", "YOUR_CLIENT_SECRET")
 NAVER_REDIRECT_URI = os.getenv("NAVER_REDIRECT_URI", "http://localhost:8000/callback")
 CAFE_URL = "https://cafe.naver.com/paramsx"
 templates = Jinja2Templates(directory="templates")
+
+# 정적 파일 경로 등록
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # 라우터 등록
 from login import router as login_router

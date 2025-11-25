@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 import httpx
 import os
@@ -26,7 +26,7 @@ async def callback(request: Request):
     code = request.query_params.get("code")
     state = request.query_params.get("state")
     if not code:
-        return HTMLResponse(content="인증 코드가 없습니다.")
+        return templates.TemplateResponse("error.html", {"request": request, "message": "인증 코드가 없습니다."})
 
     token_url = "https://nid.naver.com/oauth2.0/token"
     params = {
@@ -42,7 +42,7 @@ async def callback(request: Request):
 
     access_token = token_data.get("access_token")
     if not access_token:
-        return HTMLResponse(content=f"토큰 오류: {token_data}")
+        return templates.TemplateResponse("error.html", {"request": request, "message": f"토큰 오류: {token_data}"})
 
     request.session["access_token"] = access_token
 
@@ -50,12 +50,15 @@ async def callback(request: Request):
     async with httpx.AsyncClient() as client:
         res = await client.get("https://openapi.naver.com/v1/nid/me", headers=headers)
         profile = res.json()
+        request.session["profile"] = profile
 
-    return HTMLResponse(content=f"<pre>{profile}</pre><br><a href='/me'>내 토큰 확인</a>")
+    return RedirectResponse(url="/profile")
 
-@router.get("/me")
-async def me(request: Request):
-    access_token = request.session.get("access_token")
-    if not access_token:
-        return HTMLResponse(content="세션에 토큰이 없습니다.")
-    return HTMLResponse(content=f"세션 토큰: {access_token}")
+
+# 프로필 페이지 엔드포인트
+@router.get("/profile")
+async def profile(request: Request):
+    profile = request.session.get("profile")
+    if not profile:
+        return templates.TemplateResponse("error.html", {"request": request, "message": "세션에 프로필 정보가 없습니다."})
+    return templates.TemplateResponse("profile.html", {"request": request, "profile": profile})

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>네이버 프로필 정보</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+  <div class="max-w-md mx-auto mt-16 p-8 bg-white rounded-xl shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-center text-green-700">네이버 프로필 정보</h2>
+
+    <div class="mb-4 text-center">
+      <span class="font-semibold">별명:</span>
+      <span>{{ profile.response.nickname }}</span>
+    </div>
+    <div class="mb-4 text-center">
+      <span class="font-semibold">프로필 이미지:</span><br>
+      {% if profile.response.profile_image %}
+        <img src="{{ profile.response.profile_image }}" alt="프로필 이미지" class="mx-auto mt-2 rounded-full shadow" style="width:25vw; max-width:200px; height:auto;">
+      {% else %}
+        <span class="text-gray-400">이미지 없음</span>
+      {% endif %}
+    </div>
+    <div class="flex gap-2 mt-6">
+      <a href="/" class="flex-1 py-2 bg-green-500 text-white rounded-lg text-center font-semibold hover:bg-green-600 transition">메인으로 돌아가기</a>
+      <br>
+      <a href="/posts" class="flex-1 py-2 bg-blue-500 text-white rounded-lg text-center font-semibold hover:bg-blue-600 transition">카페글 조회</a>
+    </div>
+  </div>
+</body>
+</html>
