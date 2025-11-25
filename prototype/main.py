@@ -1,9 +1,9 @@
-
 import os
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 import httpx
 from dotenv import load_dotenv
+from fastapi.templating import Jinja2Templates
 
 load_dotenv()
 
@@ -15,8 +15,9 @@ NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID", "YOUR_CLIENT_ID")
 NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET", "YOUR_CLIENT_SECRET")
 NAVER_REDIRECT_URI = os.getenv("NAVER_REDIRECT_URI", "http://localhost:8000/callback")
 CAFE_URL = "https://cafe.naver.com/paramsx"
+templates = Jinja2Templates(directory="templates")
 
-@app.get("/my-cafe-posts", response_class=HTMLResponse)
+@app.get("/posts", response_class=HTMLResponse)
 async def show_form():
 	html = """
 	<h2>닉네임으로 카페 게시글 조회</h2>
@@ -27,7 +28,7 @@ async def show_form():
 	"""
 	return HTMLResponse(content=html)
 
-@app.post("/my-cafe-posts", response_class=HTMLResponse)
+@app.post("/posts", response_class=HTMLResponse)
 async def get_posts(nickname: str = Form(...)):
 	# 네이버 검색 API 호출
 	search_url = "https://openapi.naver.com/v1/search/cafearticle.json"
@@ -64,20 +65,14 @@ async def get_posts(nickname: str = Form(...)):
 
 
 @app.get("/")
-async def index():
-
-	naver_auth_url = (
-		f"https://nid.naver.com/oauth2.0/authorize?response_type=code"
-		f"&client_id={NAVER_CLIENT_ID}"
-		f"&redirect_uri={NAVER_REDIRECT_URI}"
-		f"&state=RANDOM_STATE"
-	)
-
-	html = f"""
-	<h2>네이버 로그인 테스트</h2>
-	<a href='{naver_auth_url}'>네이버로 로그인</a>
-	"""
-	return HTMLResponse(content=html)
+async def index(request: Request):
+    naver_auth_url = (
+        f"https://nid.naver.com/oauth2.0/authorize?response_type=code"
+        f"&client_id={NAVER_CLIENT_ID}"
+        f"&redirect_uri={NAVER_REDIRECT_URI}"
+        f"&state=RANDOM_STATE"
+    )
+    return templates.TemplateResponse("index.html", {"request": request, "naver_auth_url": naver_auth_url})
 
 @app.get("/callback")
 async def callback(request: Request):
