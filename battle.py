@@ -99,6 +99,10 @@ class Tournament:
         """
         Run the tournament until one character remains.
         
+        Note: Characters carry their damage between rounds (HP is not reset),
+        creating a battle royale style where surviving tough battles has consequences.
+        Characters receiving byes maintain their HP advantage.
+        
         Returns:
             The tournament champion
         """
