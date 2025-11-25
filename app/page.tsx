@@ -2,10 +2,24 @@
 
 import { useState, useEffect } from 'react'
 
+interface UserInfo {
+  id: string
+  name: string
+  email: string
+  nickname?: string
+}
+
+interface CafePost {
+  title: string
+  author: string
+  date: string
+  content: string
+}
+
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [userInfo, setUserInfo] = useState<any>(null)
-  const [cafePosts, setCafePosts] = useState<any[]>([])
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
+  const [cafePosts, setCafePosts] = useState<CafePost[]>([])
   const [loading, setLoading] = useState(false)
   const [cafeUrl, setCafeUrl] = useState('')
 

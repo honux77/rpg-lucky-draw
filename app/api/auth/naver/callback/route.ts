@@ -28,11 +28,9 @@ export async function GET(request: NextRequest) {
     const tokenData = await tokenResponse.json()
 
     if (tokenData.access_token) {
-      // Redirect to home with token in URL hash (to be stored in localStorage)
-      const redirectUrl = new URL('/', request.url)
-      redirectUrl.searchParams.set('token', tokenData.access_token)
-      
       // Create an HTML page that will store the token and redirect
+      // Using JSON.stringify to properly escape the token value
+      const escapedToken = JSON.stringify(tokenData.access_token)
       const html = `
         <!DOCTYPE html>
         <html>
@@ -41,7 +39,7 @@ export async function GET(request: NextRequest) {
           </head>
           <body>
             <script>
-              localStorage.setItem('naver_token', '${tokenData.access_token}');
+              localStorage.setItem('naver_token', ${escapedToken});
               window.location.href = '/';
             </script>
             <p>로그인 처리 중...</p>
